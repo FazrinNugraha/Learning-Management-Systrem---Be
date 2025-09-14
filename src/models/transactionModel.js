@@ -20,4 +20,4 @@ const transactionModel = new mongoose.Schema({
     timestamps: true
 })
 
-export default mongoose('transaction', transactionModel)
+export default mongoose.model('transaction', transactionModel)
