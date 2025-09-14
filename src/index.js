@@ -1,0 +1,24 @@
+import express from "express"
+import dotenv from 'dotenv'
+import bodyParser from "body-parser"
+import cors from 'cors'
+import globalRoutes from "./routes/globalRoutes.js"
+
+const app = express()
+
+dotenv.config()
+
+const port = 3000
+app.use(cors())
+app.use(bodyParser.json())
+app.use(express.static('public'))
+
+app.get('/', (req, res) => {
+  res.json({text:'Hello World '})
+})
+
+app.use('/api', globalRoutes)
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
