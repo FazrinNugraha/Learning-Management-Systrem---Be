@@ -20,7 +20,7 @@ export const signUpAction = async (req , res) => {
         await user.save()
 
         return res.json({
-            message: 'Sign Up Succes' ,
+            message: 'Sign Up Succses' ,
             data : {
                 midtrans_payment_url : 'https://www.google.com'
             }

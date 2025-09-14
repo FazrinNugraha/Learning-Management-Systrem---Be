@@ -4,10 +4,13 @@ import bodyParser from "body-parser"
 import cors from 'cors'
 import globalRoutes from "./routes/globalRoutes.js"
 import authRoutes from "./routes/authRoutes.js"
+import connectDB from "./utils/databases.js"
 
 const app = express()
 
 dotenv.config()
+
+connectDB()
 
 const port = 3000
 app.use(cors())
