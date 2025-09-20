@@ -5,8 +5,7 @@ import TransactionModel from '../models/transactionModel.js'
 
 export const signUpAction = async (req, res) => {
     const midtransUrl = process.env.MIDTRANS_URL
-    const serverKey = process.env.MIDTRANS_SERVER_KEY
-    const midtransAuthString = Buffer.from(serverKey + ":").toString("base64") // ✅ generate Base64
+    const midtransAuthString = process.env.MIDTRANS_AUTH_STRING
 
     try {
         const body = req.body;
@@ -30,7 +29,7 @@ export const signUpAction = async (req, res) => {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Basic ${midtransAuthString}` // ✅ pakai hasil encode
+                 Authorization : `Basic ${midtransAuthString}` // ✅ pakai hasil encode
             },
             body: JSON.stringify({
                 transaction_details: {
@@ -49,15 +48,7 @@ export const signUpAction = async (req, res) => {
             })
         });
 
-        const raw = await midtrans.text();
-        console.log("Midtrans Response:", raw);
-
-        let resMidtrans;
-        try {
-            resMidtrans = JSON.parse(raw);
-        } catch (err) {
-            console.error("Gagal parse JSON Midtrans:", err);
-        }
+        const resMidtrans = await midtrans.json()
 
         await user.save();
         await transaction.save();
