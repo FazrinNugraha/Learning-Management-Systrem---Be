@@ -44,7 +44,7 @@ export const signUpAction = async (req, res) => {
                     email: user.email,
                 },
                 callbacks: {
-                    finish: 'http://localhost:5371/success-checkout'
+                    finish: 'http://localhost:5173/success-checkout'
                 }
             })
         });
