@@ -10,7 +10,7 @@ export const verifyToken = async (req, res, next) => {
             secretKey
         )
 
-        const user = await userModel.finsdById(
+        const user = await userModel.findById(
             decoded.data.id,
             "_id name email role"
         )
@@ -29,7 +29,7 @@ export const verifyToken = async (req, res, next) => {
         }
         next()
     } else {
-        return json.status(401).json({
+        return res.status(401).json({
             message: "Unauthorized access - Token missing",
         })
     }
