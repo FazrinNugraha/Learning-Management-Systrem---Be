@@ -6,7 +6,7 @@ const courseModel = new mongoose.Schema({
         required: true,
     },
 
-    thumbnails: {
+    thumbnail: {
         type: String, required: true,
     },
 
@@ -19,7 +19,7 @@ const courseModel = new mongoose.Schema({
         type: String, required: true,
     },
 
-    desctiption: {
+    description: {
         type: String, required: true,
     },
 
