@@ -16,7 +16,7 @@ export const signInSchema = signUpSchema.omit({name: true})
 
 export const mutateCourseSchema = z.object({
     name: z.string().min(5),
-    categoryId: z.string().min(),
+    categoryId: z.string().min(1),
     tagline: z.string().min(5),
     description: z.string().min(10),
 })
