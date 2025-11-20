@@ -3,6 +3,7 @@ import fs from 'fs';
 import { mutateCourseSchema } from "../utils/schema.js";
 import userModel from "../models/userModel.js";
 import categoryModel from "../models/categoryModel.js";
+import path from "path";
 
 export const getCourses = async (req, res) => {
     try {
@@ -112,8 +113,6 @@ export const updateCourse = async (req, res) => {
 
     const courseId = req.params.id
 
-    
-
     // Validasi input pakai Zod
     const parse = mutateCourseSchema.safeParse(body);
     if (!parse.success) {
@@ -163,3 +162,31 @@ export const updateCourse = async (req, res) => {
     });
   }
 };
+
+export const deleteCourse = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const course = await courseModel.findById(id);
+
+    const filePath = path.join(__dirname, '..','..', 'uploads', 'courses', course.thumbnail);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+
+      await courseModel.findByIdAndDelete(id);
+
+      return res.json({
+        message: "Course deleted successfully",
+      });
+    }
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    })
+    
+  }
+}
