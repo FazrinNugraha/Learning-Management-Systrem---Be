@@ -174,9 +174,9 @@ export const deleteCourse = async (req, res) => {
     }
 
     const dirname = path.resolve();
-    const filePath = path.join(dirname, '..','..', 'uploads', 'courses', course.thumbnail);
+    const filePath = path.join(dirname, "public/uploads/courses", course.thumbnail);
 
-    console.log("delete file:", filePath);
+   
 
     // jika thumbnail ada, hapus filenya
     if (fs.existsSync(filePath)) {
