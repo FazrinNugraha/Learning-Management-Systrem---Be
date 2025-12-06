@@ -3,7 +3,7 @@ import fs from 'fs';
 import { mutateCourseSchema } from "../utils/schema.js";
 import userModel from "../models/userModel.js";
 import categoryModel from "../models/categoryModel.js";
-import path from "path";
+import path, { resolve } from "path";
 
 export const getCourses = async (req, res) => {
     try {
@@ -169,24 +169,32 @@ export const deleteCourse = async (req, res) => {
 
     const course = await courseModel.findById(id);
 
-    const filePath = path.join(__dirname, '..','..', 'uploads', 'courses', course.thumbnail);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
 
+    const dirname = path.resolve();
+    const filePath = path.join(dirname, '..','..', 'uploads', 'courses', course.thumbnail);
+
+    console.log("delete file:", filePath);
+
+    // jika thumbnail ada, hapus filenya
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
-
-      await courseModel.findByIdAndDelete(id);
-
-      return res.json({
-        message: "Course deleted successfully",
-      });
     }
+
+    // tetap hapus course dari database
+    await courseModel.findByIdAndDelete(id);
+
+    return res.json({
+      message: "Course deleted successfully",
+    });
 
   } catch (error) {
     console.error(error);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
-    })
-    
+    });
   }
-}
+};
