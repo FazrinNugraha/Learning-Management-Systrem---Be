@@ -116,7 +116,7 @@ export const signInAction  = async (req, res) => {
      },
 
      process.env.SECRET_KEY_JWT,
-     {expiresIn: '7 days'}
+     {expiresIn: '30 days'}
 )
 
     return res.json({
