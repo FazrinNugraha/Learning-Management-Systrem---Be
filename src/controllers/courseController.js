@@ -6,44 +6,45 @@ import categoryModel from "../models/categoryModel.js";
 import path, { resolve } from "path";
 
 export const getCourses = async (req, res) => {
-    try {
-        const courses = await courseModel.find({
-            manager: req.user?._id
-        })
+  try {
+    console.log("req.user._id:", req.user?._id);
+    const courses = await courseModel.find({
+      manager: req.user?._id
+    })
 
-        .select('name thumbnail')
-        .populate({
-            path: 'category',
-            select: 'name -_id'
-        })
+      .select('name thumbnail')
+      .populate({
+        path: 'category',
+        select: 'name -_id'
+      })
 
-        .populate({
-            path: 'students' ,
-            select: 'name '
-        })
+      .populate({
+        path: 'students',
+        select: 'name '
+      })
 
-        const imageUrl = process.env.APP_URL + '/uploads/courses/'
+    const imageUrl = process.env.APP_URL + '/uploads/courses/'
 
-        const response = courses.map((item) => {
-          return {
-            ...item.toObject(),
-            thumbnailUrl: imageUrl + item.thumbnail,
-            totalStudents: item.students.length
-          }
-        })
+    const response = courses.map((item) => {
+      return {
+        ...item.toObject(),
+        thumbnailUrl: imageUrl + item.thumbnail,
+        totalStudents: item.students.length
+      }
+    })
 
-        return res.json({
-            message: "Get courses succses",
-            data: response
-        })
-    } catch (error) {
-        return res.status(400).json ({
-            message: "Internal Error Server"
-        })
-    }
+    return res.json({
+      message: "Get courses succses",
+      data: response
+    })
+  } catch (error) {
+    return res.status(400).json({
+      message: "Internal Error Server"
+    })
+  }
 }
 
-export const getCategories  = async (req, res) => {
+export const getCategories = async (req, res) => {
   try {
     const categories = await categoryModel.find()
 
@@ -51,13 +52,31 @@ export const getCategories  = async (req, res) => {
       message: "Get categories success",
       data: categories
     })
-    
+
   } catch (error) {
     return res.status(500).json({
       message: "Internal Server Error"
     })
   }
 }
+
+export const getCourseById = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const course = await courseModel.findById(id)
+
+    return res.json({
+      message: "Get course by id success",
+      data: course
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error"
+    })
+  }
+}
+
 
 export const postCourse = async (req, res) => {
   try {
@@ -157,14 +176,14 @@ export const updateCourse = async (req, res) => {
     }
 
     await courseModel.findByIdAndUpdate(
-      courseId,{
-        name: parse.data.name,
-        category: category._id,
-        description: parse.data.description,
-        tagline: parse.data.tagline,
-        thumbnail: req?.file ? req.file?.filename : oldCourse.thumbnail,
-        manager: req.user._id,
-      }
+      courseId, {
+      name: parse.data.name,
+      category: category._id,
+      description: parse.data.description,
+      tagline: parse.data.tagline,
+      thumbnail: req?.file ? req.file?.filename : oldCourse.thumbnail,
+      manager: req.user._id,
+    }
     )
 
     return res.status(201).json({
@@ -192,7 +211,7 @@ export const deleteCourse = async (req, res) => {
     const dirname = path.resolve();
     const filePath = path.join(dirname, "public/uploads/courses", course.thumbnail);
 
-   
+
 
     // jika thumbnail ada, hapus filenya
     if (fs.existsSync(filePath)) {
