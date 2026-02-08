@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCategories, getCourseById, getCourses, postContentCourse, updateContentCourse, updateCourse } from '../controllers/courseController.js';
+import { deleteContentCourse, getCategories, getCourseById, getCourses, postContentCourse, updateContentCourse, updateCourse } from '../controllers/courseController.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 import multer from 'multer';
 import { fileStorageCourses, fileFilter } from '../utils/multer.js';
@@ -10,7 +10,7 @@ import { validateRequest } from '../middlewares/validateRequest.js';
 
 const courseRoutes = express.Router()
 
-const upload = multer ({
+const upload = multer({
     storage: fileStorageCourses,
     fileFilter
 })
@@ -24,6 +24,8 @@ courseRoutes.delete('/courses/:id', verifyToken, deleteCourse)
 
 courseRoutes.post('/courses/contents', verifyToken, validateRequest(mutateContentSchema), postContentCourse)
 courseRoutes.put('/courses/contents/:id', verifyToken, validateRequest(mutateContentSchema), updateContentCourse)
+courseRoutes.delete('/courses/contents/:id', verifyToken, deleteContentCourse)
+
 
 
 

@@ -259,7 +259,7 @@ export const postContentCourse = async (req, res) => {
       data: postContent,
     });
   } catch (error) {
-     console.error(error);
+    console.error(error);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
@@ -287,10 +287,27 @@ export const updateContentCourse = async (req, res) => {
       message: "Content created successfully"
     });
   } catch (error) {
-     console.error(error);
+    console.error(error);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
     });
   }
 };
+
+export const deleteContentCourse = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await courseDetailModel.findByIdAndDelete(id);
+
+    return res.json({
+      message: "Content deleted successfully"
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+}
