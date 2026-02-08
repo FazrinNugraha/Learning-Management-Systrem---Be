@@ -1,82 +1,82 @@
 import courseModel from "../models/courseModel.js";
-import fs from 'fs';
+import fs from "fs";
 import { mutateCourseSchema } from "../utils/schema.js";
 import userModel from "../models/userModel.js";
 import categoryModel from "../models/categoryModel.js";
 import path, { resolve } from "path";
+import courseDetailModel from "../models/courseDetailModel.js";
 
 export const getCourses = async (req, res) => {
   try {
     console.log("req.user._id:", req.user?._id);
-    const courses = await courseModel.find({
-      manager: req.user?._id
-    })
+    const courses = await courseModel
+      .find({
+        manager: req.user?._id,
+      })
 
-      .select('name thumbnail')
+      .select("name thumbnail")
       .populate({
-        path: 'category',
-        select: 'name -_id'
+        path: "category",
+        select: "name -_id",
       })
 
       .populate({
-        path: 'students',
-        select: 'name '
-      })
+        path: "students",
+        select: "name ",
+      });
 
-    const imageUrl = process.env.APP_URL + '/uploads/courses/'
+    const imageUrl = process.env.APP_URL + "/uploads/courses/";
 
     const response = courses.map((item) => {
       return {
         ...item.toObject(),
         thumbnailUrl: imageUrl + item.thumbnail,
-        totalStudents: item.students.length
-      }
-    })
+        totalStudents: item.students.length,
+      };
+    });
 
     return res.json({
       message: "Get courses succses",
-      data: response
-    })
+      data: response,
+    });
   } catch (error) {
     return res.status(400).json({
-      message: "Internal Error Server"
-    })
+      message: "Internal Error Server",
+    });
   }
-}
+};
 
 export const getCategories = async (req, res) => {
   try {
-    const categories = await categoryModel.find()
+    const categories = await categoryModel.find();
 
     return res.json({
       message: "Get categories success",
-      data: categories
-    })
-
+      data: categories,
+    });
   } catch (error) {
     return res.status(500).json({
-      message: "Internal Server Error"
-    })
+      message: "Internal Server Error",
+    });
   }
-}
+};
 
 export const getCourseById = async (req, res) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
 
-    const course = await courseModel.findById(id)
+    const course = await courseModel.findById(id).populate("details");
 
     return res.json({
       message: "Get course by id success",
-      data: course
-    })
+      data: course,
+    });
   } catch (error) {
     return res.status(500).json({
-      message: "Internal Server Error"
-    })
+      message: "Internal Server Error",
+    });
   }
-}
-
+};
 
 export const postCourse = async (req, res) => {
   try {
@@ -86,7 +86,7 @@ export const postCourse = async (req, res) => {
     // Validasi input pakai Zod
     const parse = mutateCourseSchema.safeParse(body);
     if (!parse.success) {
-      const errorMessages = parse.error.issues.map(e => e.message);
+      const errorMessages = parse.error.issues.map((e) => e.message);
 
       // Hapus file kalau ada, tapi validasi gagal
       if (req?.file?.path && fs.existsSync(req.file.path)) {
@@ -146,12 +146,12 @@ export const updateCourse = async (req, res) => {
   try {
     const body = req.body;
 
-    const courseId = req.params.id
+    const courseId = req.params.id;
 
     // Validasi input pakai Zod
     const parse = mutateCourseSchema.safeParse(body);
     if (!parse.success) {
-      const errorMessages = parse.error.issues.map(e => e.message);
+      const errorMessages = parse.error.issues.map((e) => e.message);
 
       // Hapus file kalau ada, tapi validasi gagal
       if (req?.file?.path && fs.existsSync(req.file.path)) {
@@ -166,8 +166,8 @@ export const updateCourse = async (req, res) => {
     }
 
     // ✅ Cari kategori di collection Category
-    const category = await categoryModel.findById(parse.data.categoryId)
-    const oldCourse = await courseModel.findById(courseId)
+    const category = await categoryModel.findById(parse.data.categoryId);
+    const oldCourse = await courseModel.findById(courseId);
 
     if (!category) {
       return res.status(400).json({
@@ -175,16 +175,14 @@ export const updateCourse = async (req, res) => {
       });
     }
 
-    await courseModel.findByIdAndUpdate(
-      courseId, {
+    await courseModel.findByIdAndUpdate(courseId, {
       name: parse.data.name,
       category: category._id,
       description: parse.data.description,
       tagline: parse.data.tagline,
       thumbnail: req?.file ? req.file?.filename : oldCourse.thumbnail,
       manager: req.user._id,
-    }
-    )
+    });
 
     return res.status(201).json({
       message: "Updated courses successfully",
@@ -209,9 +207,11 @@ export const deleteCourse = async (req, res) => {
     }
 
     const dirname = path.resolve();
-    const filePath = path.join(dirname, "public/uploads/courses", course.thumbnail);
-
-
+    const filePath = path.join(
+      dirname,
+      "public/uploads/courses",
+      course.thumbnail,
+    );
 
     // jika thumbnail ada, hapus filenya
     if (fs.existsSync(filePath)) {
@@ -224,9 +224,42 @@ export const deleteCourse = async (req, res) => {
     return res.json({
       message: "Course deleted successfully",
     });
-
   } catch (error) {
     console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+export const postContentCourse = async (req, res) => {
+  try {
+    const body = req.body;
+
+    const course = await courseModel.findById(body.courseId);
+
+    const postContent = new courseDetailModel({
+      title: body.title,
+      type: body.type,
+      course: course._id,
+      youtubeId: body.youtubeId,
+      text: body.text,
+    });
+    await postContent.save();
+    await courseModel.findByIdAndUpdate(
+      course._id,
+      {
+        $push: { details: postContent._id },
+      },
+      { new: true },
+    );
+    return res.status(201).json({
+      message: "Content created successfully",
+      data: postContent,
+    });
+  } catch (error) {
+     console.error(error);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
