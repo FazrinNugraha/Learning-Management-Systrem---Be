@@ -25,6 +25,6 @@ export const mutateContentSchema = z.object({
     title: z.string().min(5),
     type: z.string(5),
     youtubeId: z.string().optional(),
-    text: z.string().optional(),
+    text: z.string(),
     courseId: z.string().min(5),
 })

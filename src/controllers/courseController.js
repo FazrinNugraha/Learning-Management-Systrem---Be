@@ -65,7 +65,17 @@ export const getCourseById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const course = await courseModel.findById(id).populate("details");
+    const{preview} = req.query;
+
+    const course = await courseModel.findById(id).populate({
+      path: "details",
+      select: "title type",
+    })
+
+    .populate({
+      path: "details",
+      select: preview === "true" ? "title type youtubeId text" : "title type",
+    });
 
     return res.json({
       message: "Get course by id success",
@@ -284,7 +294,7 @@ export const updateContentCourse = async (req, res) => {
 
 
     return res.status(201).json({
-      message: "Content created successfully"
+      message: "Content updated successfully"
     });
   } catch (error) {
     console.error(error);

@@ -13,7 +13,7 @@ const courseDetailModel = new mongoose.Schema(
       deafult: "video",
     },
     youtubeId: String,
-    textId: String,
+    text: String,
 
     course: {
       type: mongoose.Schema.Types.ObjectId,
