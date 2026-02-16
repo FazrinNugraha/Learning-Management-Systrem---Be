@@ -65,25 +65,25 @@ export const getCourseById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const{preview} = req.query;
+    const { preview } = req.query;
 
     const course = await courseModel
-    .findById(id)
-    .populate({
-      path: "category",
-      select: "name -_id", 
-    })
-    .populate({
-      path: "details",
-      select: "title type",
-    })
+      .findById(id)
+      .populate({
+        path: "category",
+        select: "name -_id",
+      })
+      .populate({
+        path: "details",
+        select: "title type",
+      })
 
-    
 
-    .populate({
-      path: "details",
-      select: preview === "true" ? "title type youtubeId text" : "title type",
-    });
+
+      .populate({
+        path: "details",
+        select: preview === "true" ? "title type youtubeId text" : "title type",
+      });
 
     const imageUrl = process.env.APP_URL + "/uploads/courses/";
 
@@ -332,5 +332,23 @@ export const deleteContentCourse = async (req, res) => {
       message: "Internal Server Error",
       error: error.message,
     });
+  }
+}
+
+export const getDetailContent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const content = await courseDetailModel.findById(id);
+
+    return res.json({
+      message: "Get detail content success",
+      data: content
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    })
   }
 }

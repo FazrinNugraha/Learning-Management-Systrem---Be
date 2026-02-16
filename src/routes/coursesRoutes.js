@@ -7,6 +7,7 @@ import { postCourse } from '../controllers/courseController.js';
 import { deleteCourse } from '../controllers/courseController.js';
 import { mutateContentSchema } from '../utils/schema.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
+import { getDetailContent } from '../controllers/courseController.js';
 
 const courseRoutes = express.Router()
 
@@ -25,6 +26,8 @@ courseRoutes.delete('/courses/:id', verifyToken, deleteCourse)
 courseRoutes.post('/courses/contents', verifyToken, validateRequest(mutateContentSchema), postContentCourse)
 courseRoutes.put('/courses/contents/:id', verifyToken, validateRequest(mutateContentSchema), updateContentCourse)
 courseRoutes.delete('/courses/contents/:id', verifyToken, deleteContentCourse)
+courseRoutes.get('/courses/contents/:id', verifyToken, getDetailContent)
+
 
 
 
