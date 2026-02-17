@@ -12,7 +12,7 @@ export const signUpSchema = z.object({
     password: z.string().min(3)
 })
 
-export const signInSchema = signUpSchema.omit({name: true})
+export const signInSchema = signUpSchema.omit({ name: true })
 
 export const mutateCourseSchema = z.object({
     name: z.string().min(5),
@@ -23,8 +23,8 @@ export const mutateCourseSchema = z.object({
 
 export const mutateContentSchema = z.object({
     title: z.string().min(5),
-    type: z.string(5),
+    type: z.string().min(3),
     youtubeId: z.string().optional(),
-    text: z.string(),
+    text: z.string().optional(),
     courseId: z.string().min(5),
 })

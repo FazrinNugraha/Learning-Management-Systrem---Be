@@ -10,7 +10,7 @@ const courseDetailModel = new mongoose.Schema(
     type: {
       type: String,
       enum: ["video", "text"],
-      deafult: "video",
+      default: "video",
     },
     youtubeId: String,
     text: String,
