@@ -26,10 +26,10 @@ const userModel = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
     }],
-    manager: [{
+    manager: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
-    }]
+    }
 })
 
 export default mongoose.model("User" , userModel)

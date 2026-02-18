@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js"
 import connectDB from "./utils/databases.js"
 import paymentRoutes from "./routes/paymentRoutes.js"
 import courseRoutes from "./routes/coursesRoutes.js"
+import studentRoutes from "./routes/studentRoutes.js"
 
 const app = express()
 dotenv.config()
@@ -29,6 +30,8 @@ app.use('/api', globalRoutes)
 app.use('/api', authRoutes)
 app.use('/api', paymentRoutes)
 app.use('/api', courseRoutes)
+app.use('/api', studentRoutes)
+
 
 
 app.listen(port, () => {
