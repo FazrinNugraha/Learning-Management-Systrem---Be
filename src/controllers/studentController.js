@@ -17,8 +17,8 @@ export const getStudent = async (req, res) => {
 
     const response = student.map((item) => {
       return {
-        ...toObject(),
-        photo_url: photoUrl + ClipboardItem.photo,
+        ...item.toObject(),
+        photo_url: photoUrl + item.photo,
       };
     });
 
