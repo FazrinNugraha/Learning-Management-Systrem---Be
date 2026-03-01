@@ -34,6 +34,24 @@ export const getStudent = async (req, res) => {
   }
 };
 
+export const getStudentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await userModel.findById(id).select("name courses photo");
+
+    return res.status(200).json({
+      message: "Get student successfully",
+      data: student,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
 export const postStudent = async (req, res) => {
   try {
     const body = req.body;
