@@ -38,7 +38,7 @@ export const getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const student = await userModel.findById(id).select("name courses photo");
+    const student = await userModel.findById(id).select("name email courses photo");
 
     return res.status(200).json({
       message: "Get student successfully",
