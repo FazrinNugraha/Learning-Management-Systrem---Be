@@ -352,3 +352,55 @@ export const getDetailContent = async (req, res) => {
     })
   }
 }
+
+export const getStudentsByCourseId = async (req,res) => {
+  try {
+
+    const { id } = req.params;
+
+    const course = await courseModel.findById(id).select('name').populate({
+      path: "students",
+      select: "name email photo",
+    })
+
+    return res.json({
+      message: "Get students by course id success",
+      data: course
+    })
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    })
+  }
+}
+
+export const postStudentToCourseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { studentId } = req.body;
+
+    await userModel.findByIdAndUpdate(studentId, {
+      $push: { 
+        courses: id 
+      },
+    }); 
+
+    await courseModel.findByIdAndUpdate(id, {
+      $push: { 
+        students: studentId 
+      },
+    });
+
+    return res.json({
+      message: "Student added to course successfully"
+    })
+    
+  } catch (error) {
+        return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    })
+  }
+}

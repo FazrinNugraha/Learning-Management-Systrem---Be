@@ -1,11 +1,11 @@
 import express from 'express';
-import { deleteContentCourse, getCategories, getCourseById, getCourses, postContentCourse, updateContentCourse, updateCourse } from '../controllers/courseController.js';
+import { deleteContentCourse, getCategories, getCourseById, getCourses, getStudentsByCourseId, postContentCourse, postStudentToCourseById, updateContentCourse, updateCourse } from '../controllers/courseController.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 import multer from 'multer';
 import { fileStorageCourses, fileFilter } from '../utils/multer.js';
 import { postCourse } from '../controllers/courseController.js';
 import { deleteCourse } from '../controllers/courseController.js';
-import { mutateContentSchema } from '../utils/schema.js';
+import { addStudentToCourseSchema, mutateContentSchema } from '../utils/schema.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
 import { getDetailContent } from '../controllers/courseController.js';
 
@@ -27,6 +27,10 @@ courseRoutes.post('/courses/contents', verifyToken, validateRequest(mutateConten
 courseRoutes.put('/courses/contents/:id', verifyToken, validateRequest(mutateContentSchema), updateContentCourse)
 courseRoutes.delete('/courses/contents/:id', verifyToken, deleteContentCourse)
 courseRoutes.get('/courses/contents/:id', verifyToken, getDetailContent)
+
+courseRoutes.get('/courses/students/:id', verifyToken, getStudentsByCourseId)
+courseRoutes.post('/courses/students/:id', verifyToken, validateRequest(addStudentToCourseSchema), postStudentToCourseById)
+
 
 
 
