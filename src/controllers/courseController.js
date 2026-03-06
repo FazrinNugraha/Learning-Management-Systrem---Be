@@ -363,9 +363,21 @@ export const getStudentsByCourseId = async (req,res) => {
       select: "name email photo",
     })
 
+    const photoUrl = process.env.APP_URL + "/uploads/students/";
+
+    const studentMap = course?.students?.map((item) => {
+      return {
+        ...item.toObject(),
+        photo_url: photoUrl + item.photo,
+      }
+    })    
+
     return res.json({
       message: "Get students by course id success",
-      data: course
+      data: {
+        ...course,
+        students: studentMap
+      }
     })
     
   } catch (error) {
@@ -404,3 +416,34 @@ export const postStudentToCourseById = async (req, res) => {
     })
   }
 }
+
+export const deletetToCourseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { studentId } = req.body;
+
+    await userModel.findByIdAndUpdate(studentId, {
+      $pull: {
+        courses: id 
+      },
+    }); 
+
+    await courseModel.findByIdAndUpdate(id, {
+      $pull: {
+        students: studentId 
+      },
+    });
+
+    return res.json({
+      message: "Delete to course successfully"
+    })
+    
+  } catch (error) {
+        return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    })
+  }
+}
+
+
