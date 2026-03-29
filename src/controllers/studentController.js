@@ -187,3 +187,33 @@ export const deleteStudent = async (req, res) => {
     });
   }
 };
+
+export const getCoursesStudents = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user._id).populate({
+      path: "courses",
+      select: "name category thumbnail",
+      populate: {
+        path: "category",
+        select: "name",
+      },
+    });
+
+    const imageUrl = process.env.APP_URL + "/uploads/courses/";
+    const response = user.courses.map((item) => {
+      return {
+        ...item.toObject(),
+        thumbnail_url: imageUrl + item.thumbnail,
+      };
+    })
+    return res.status(200).json({
+      message: "Get courses successfully",
+      data: response,
+    });
+  } catch (error) {
+     return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+}
